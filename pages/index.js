@@ -11,7 +11,7 @@ const Index = ({ climbs }) => {
   return (
     <div className='grid _2x'>
       <div>
-        <PyramidItems climbs={climbs} />
+        <PyramidWrapper climbs={climbs} />
       </div>
       <div className='climbs-list__wrapper'>
         <ul>
