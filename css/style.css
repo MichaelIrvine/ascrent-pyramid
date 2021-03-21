@@ -34,9 +34,11 @@
 }
 
 .grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+}
+
+.grid ._2x {
+  grid-template-columns: 1fr 1fr;
 }
 
 /* Styles for Cards */
@@ -181,4 +183,8 @@ li {
 
 .confirmation-box.show {
   display: block;
+}
+
+li[data-status='sent']{
+  text-decoration: line-through;
 }

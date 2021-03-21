@@ -1,65 +1,77 @@
-import Link from 'next/link'
-import dbConnect from '../utils/dbConnect'
-import Pet from '../models/Pet'
+import Link from 'next/link';
+import dbConnect from '../utils/dbConnect';
+import Climb from '../models/Climb';
+import PyramidItems from '../components/PyramidItems';
 
-const Index = ({ pets }) => (
-  <>
-    {/* Create a card for each pet */}
-    {pets.map((pet) => (
-      <div key={pet._id}>
-        <div className="card">
-          <img src={pet.image_url} />
-          <h5 className="pet-name">{pet.name}</h5>
-          <div className="main-content">
-            <p className="pet-name">{pet.name}</p>
-            <p className="owner">Owner: {pet.owner_name}</p>
+const Index = ({ climbs }) => {
+  const grades = climbs
+    .map((climb) => climb.grade)
+    .filter((value, index, self) => self.indexOf(value) === index);
 
-            {/* Extra Pet Info: Likes and Dislikes */}
-            <div className="likes info">
-              <p className="label">Likes</p>
-              <ul>
-                {pet.likes.map((data, index) => (
-                  <li key={index}>{data} </li>
-                ))}
-              </ul>
-            </div>
-            <div className="dislikes info">
-              <p className="label">Dislikes</p>
-              <ul>
-                {pet.dislikes.map((data, index) => (
-                  <li key={index}>{data} </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="btn-container">
-              <Link href="/[id]/edit" as={`/${pet._id}/edit`}>
-                <button className="btn edit">Edit</button>
-              </Link>
-              <Link href="/[id]" as={`/${pet._id}`}>
-                <button className="btn view">View</button>
-              </Link>
-            </div>
-          </div>
-        </div>
+  return (
+    <div className='grid _2x'>
+      <div>
+        <PyramidItems climbs={climbs} />
       </div>
-    ))}
-  </>
-)
+      <div className='climbs-list__wrapper'>
+        <ul>
+          {grades
+            .sort((a, b) => b - a)
+            .map((grade, i) => {
+              const vGrade = grade;
+              return (
+                <li key={i}>
+                  <h2>v{grade}</h2>
+                  <ul>
+                    {climbs
+                      .filter((climb) => climb.grade === vGrade)
+                      .map((filteredClimb, i) => (
+                        <li
+                          id={filteredClimb._id}
+                          key={i}
+                          data-status={
+                            filteredClimb.sent ? 'sent' : 'unclimbed'
+                          }
+                        >
+                          <Link
+                            href='/[id]/edit'
+                            as={`/${filteredClimb._id}/edit`}
+                          >
+                            {filteredClimb.name}
+                          </Link>
+                        </li>
+                      ))}
+                  </ul>
+                </li>
+              );
+            })}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
-/* Retrieves pet(s) data from mongodb database */
+/* Retrieves climb(s) data from mongodb database */
+/* Will get all climbs from DB */
 export async function getServerSideProps() {
-  await dbConnect()
+  await dbConnect();
 
   /* find all the data in our database */
-  const result = await Pet.find({})
-  const pets = result.map((doc) => {
-    const pet = doc.toObject()
-    pet._id = pet._id.toString()
-    return pet
-  })
+  const result = await Climb.find({});
+  const climbs = result.map((doc) => {
+    const climb = doc.toObject();
+    climb._id = climb._id.toString();
+    return climb;
+  });
 
-  return { props: { pets: pets } }
+  // get the grades to pass in props
+  const grades = climbs.filter((climb) => {
+    return climb.grade;
+  });
+
+  console.log(grades);
+  console.log(climbs);
+  return { props: { climbs: climbs } };
 }
 
-export default Index
+export default Index;
