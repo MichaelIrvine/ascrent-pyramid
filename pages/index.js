@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import dbConnect from '../utils/dbConnect';
 import Climb from '../models/Climb';
-import PyramidItems from '../components/PyramidItems';
+import PyramidWrapper from '../components/PyramidWrapper';
 
 const Index = ({ climbs }) => {
   const grades = climbs
@@ -64,13 +64,6 @@ export async function getServerSideProps() {
     return climb;
   });
 
-  // get the grades to pass in props
-  const grades = climbs.filter((climb) => {
-    return climb.grade;
-  });
-
-  console.log(grades);
-  console.log(climbs);
   return { props: { climbs: climbs } };
 }
 
