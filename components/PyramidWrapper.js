@@ -1,24 +1,24 @@
+import { useState } from 'react';
 import PyramidItems from './PyramidItems';
 
 const PyramidWrapper = ({ climbs }) => {
-  // **  pyramid top is highest grade
+  const [sentClimbs, setSentClimbs] = useState(
+    climbs.filter((climb) => climb.sent)
+  );
+
   let pyramidTop = climbs.reduce((acc, cur) =>
     acc.grade > cur.grade ? acc : cur
   );
 
-  let sentClimbs = climbs.filter((climb) => climb.sent);
-
-  const generatePyramid = (base, top, sentClimbs) => {
+  const generatePyramid = (base, top) => {
     let pyramidItems = [];
     for (let i = 1; i <= base; i++) {
       for (let j = 1; j <= i; j++) {
         pyramidItems.push(
           <PyramidItems
             key={i * base + j}
-            data-row={i}
             row={i}
             grade={i === 1 ? top : top - i + 1}
-            sentClimbs={sentClimbs}
           />
         );
       }
@@ -28,7 +28,7 @@ const PyramidWrapper = ({ climbs }) => {
 
   return (
     <div id='pyramidWrapper' className='grid'>
-      {generatePyramid(5, pyramidTop.grade, sentClimbs)}
+      {generatePyramid(4, pyramidTop.grade)}
     </div>
   );
 };
